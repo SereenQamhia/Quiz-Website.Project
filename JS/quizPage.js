@@ -1,15 +1,15 @@
 let allUsers = JSON.parse(localStorage.getItem("usersInfo"));
 let loggedInUser = {};
 
+// -------------------------------------------
 
-let loginBtn = document.getElementById("login");
 let logoutBtn = document.getElementById("logout");
 let logoutCont = document.getElementById("logoutCont");
 let loginCont = document.getElementById("loginCont");
 let registerCont = document.getElementById("registerCont");
 let headerUserName = document.getElementById("headerUserName");
 
-
+// -------------------------------------------
 
 let questionsContainer = document.getElementById("questionConteiner");
 let nextBtn = document.getElementById("next");
@@ -21,9 +21,9 @@ let quizzes = {};
 let answers = [];
 let userIndex;
 let fixedAlerts = document.getElementById("fixed");
-let fixedREADY = document.getElementById("READY");
+
 let sure = true;
-let quizResult;
+
 const quizTime = 20;
 
 
@@ -51,43 +51,11 @@ logoutBtn.onclick = () => {
         allUsers[i].isLoggedIn = false;     
     }
     localStorage.setItem("usersInfo", JSON.stringify(allUsers));
+    submitAnswers()
     window.location.href = "/HTML/homepage.html";
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // mohammad end
-
-
-
-
-
-
-
-
-
 
 
 fetch(`/JS/quizApp.json`)
@@ -106,18 +74,6 @@ fetch(`/JS/quizApp.json`)
     .catch((err) => {
         console.log(err);
     });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // 
@@ -144,16 +100,32 @@ fetch(`/JS/quizApp.json`)
             quizTitle.textContent = 'Technical Quiz';
             quizTypeImage.src = `/Images/techSkills.svg`
         }
+        if (savedQuizIndex == 2 && savedQuestionIndex== 10) {
+            const fill = document.getElementById("fill");
+            fill.style.width = `100%`;
+
+            // We have reached the last quiz (technical_quiz) and the quiz has ended
+            // Disable the "Next" button
+            nextBtn.disabled = true;
+            // Show a message indicating that the quiz has ended
+            questionsContainer.innerHTML = `
+            <div class="question" id="question">
+                    <p id="finishParagraph">You finished the Quiz!</p>
+                    <a href = "/HTML/scorePage.html"><button id="finishQuiz">Submit Answers</button></a>
+            </div>
+            `;
+
+            // Add to local storage on submit
+            document.getElementById("finishQuiz").onclick = () => {
+                submitAnswers();
+                clearInterval(countdownInterval);
+            };
+
+            document.getElementById("next").style.display = "none";
+            quizTitle.textContent = 'Done';
+            return; // Exit the function to prevent going back to the first quiz
+        }
         
-
-
-
-
-
-
-
-
-
 
         if (savedQuestionIndex !== null && savedQuizIndex !== null) {
             // Restore the current quiz state
@@ -171,26 +143,6 @@ fetch(`/JS/quizApp.json`)
     };
 
 // 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -233,16 +185,6 @@ function showQuiz(quizData, quizType, index) {
 
 }
 
-
-
-
-
-
-
-
-
-
-
 fixedAlerts.innerHTML = `
 <div>
 <img src="/Images/EnglishFixed.svg" alt="">
@@ -259,42 +201,9 @@ function fixedBTN() {
     fixedAlerts.style.display = "none";
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 document.getElementById("READY").addEventListener("click", () => {
     startCountdown();
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function nextQuestion() {
     let warningMsg = document.createElement("span");
@@ -368,7 +277,7 @@ function nextQuestion() {
                     </div>
                     </div>
                     `;
-                    if( progressWidth == 20 ){
+                    if( quizTypeIndex == 1 ){
                         fixedAlerts.style.display = "flex";
                         document.body.style.overflow = "hidden";
                     }
@@ -403,15 +312,6 @@ function nextQuestion() {
 
             showQuiz(quizzes, quizNames[quizTypeIndex], questionIndex);
         }
-
-
-
-
-
-
-
-
-
         else {
             warningMsg.textContent = 'Please choose one of the options';
             warningMsg.style.color = "red";
@@ -424,40 +324,7 @@ function nextQuestion() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 console.log(allUsers[userIndex]);
-
-
-
-
-
 
 nextQuestion();
 
@@ -528,6 +395,6 @@ function setProgressFill() {
     fill.style.width = `${progressWidth}%`;
 }
 
-window.addEventListener('load', () => {
-    setProgressFill();
-});
+// window.addEventListener('load', () => {
+//     setProgressFill();
+// });
